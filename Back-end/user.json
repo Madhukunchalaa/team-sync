@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1744421618762,
+    "name": "Manu",
+    "password": "1234",
+    "dob": "2000-07-12",
+    "role": "admin"
+  },
+  {
+    "id": 1744437334250,
+    "name": "gayatri",
+    "password": "12",
+    "dob": "2025-04-16",
+    "role": "guest"
+  },
+  {
+    "id": 1744438464874,
+    "name": "Madhu",
+    "password": "12",
+    "dob": "2025-04-09",
+    "role": "user"
+  },
+  {
+    "id": 1744440055762,
+    "name": "Raja",
+    "password": "1234",
+    "dob": "2025-04-23",
+    "role": "user"
+  },
+  {
+    "id": 1744440164914,
+    "name": "Gayathri",
+    "password": "1234",
+    "dob": "2025-04-17",
+    "role": "user"
+  },
+  {
+    "id": 1744441116241,
+    "name": "vikram",
+    "password": "1234",
+    "dob": "2025-04-10",
+    "role": "admin"
+  },
+  {
+    "id": 1744441592998,
+    "name": "abc",
+    "password": "1234",
+    "dob": "2025-04-15",
+    "role": "employee"
+  },
+  {
+    "id": 1744442160545,
+    "name": "test",
+    "password": "1234567",
+    "dob": "2025-06-09",
+    "role": "tester"
+  }
+]
