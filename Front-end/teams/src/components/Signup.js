@@ -3,30 +3,38 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import './login.css'; // Changed from login.css to TeamSyncStyles.css
 
+const API_URL = process.env.REACT_APP_API_URL || 'https://team-sync-2.onrender.com';
+
 const Signup = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [agreeToTerms, setAgreeToTerms] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError('');
 
     if (!agreeToTerms) {
-      alert("Please agree to the Terms of Service and Privacy Policy");
+      setError("Please agree to the Terms of Service and Privacy Policy");
+      setIsLoading(false);
       return;
     }
 
     if (password !== confirmPassword) {
-      alert("Passwords do not match!");
+      setError("Passwords do not match!");
+      setIsLoading(false);
       return;
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/register', {
+      const response = await axios.post(`${API_URL}/api/auth/register`, {
         name,
         email,
         password,
@@ -37,7 +45,9 @@ const Signup = () => {
       navigate('/login');
     } catch (error) {
       console.error('Signup error:', error.response?.data || error.message);
-      alert("Signup failed! " + (error.response?.data?.message || "Try again later."));
+      setError(error.response?.data?.message || "Registration failed. Please try again later.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -57,6 +67,9 @@ const Signup = () => {
 
       <div className="auth-content">
         <h2>Create an account</h2>
+        
+        {error && <div className="error-message">{error}</div>}
+        
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="name">Name</label>
@@ -67,6 +80,7 @@ const Signup = () => {
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter your name"
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -79,6 +93,7 @@ const Signup = () => {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -91,6 +106,7 @@ const Signup = () => {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Create a password"
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -103,6 +119,7 @@ const Signup = () => {
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Confirm your password"
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -112,14 +129,16 @@ const Signup = () => {
               type="checkbox"
               checked={agreeToTerms}
               onChange={(e) => setAgreeToTerms(e.target.checked)}
-              required
+              disabled={isLoading}
             />
             <label htmlFor="terms">
               I agree to the <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a>
             </label>
           </div>
 
-          <button type="submit" className="auth-button">Sign Up</button>
+          <button type="submit" className="auth-button" disabled={isLoading}>
+            {isLoading ? 'Signing up...' : 'Sign Up'}
+          </button>
         </form>
 
         <div className="login-link">

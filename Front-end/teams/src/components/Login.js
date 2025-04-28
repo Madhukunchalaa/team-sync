@@ -1,35 +1,57 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios'; // ✅ Import axios
+import axios from 'axios';
+
+const API_URL = process.env.REACT_APP_API_URL || 'https://team-sync-2.onrender.com';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError('');
     
     try {
-      // 👇 Replace with your actual backend login endpoint
-      const response = await axios.post('http://localhost:5000/api/auth/login', {
+      const response = await axios.post(`${API_URL}/api/auth/login`, {
         email,
         password,
       });
 
-      // Example: save token to localStorage (if backend returns a token)
+      // Save token to localStorage
       localStorage.setItem('token', response.data.token);
+      
+      // If remember me is checked, store email in localStorage
+      if (rememberMe) {
+        localStorage.setItem('rememberedEmail', email);
+      } else {
+        localStorage.removeItem('rememberedEmail');
+      }
 
       console.log('Login successful:', response.data);
-      alert('Login successful!');
       navigate('/dashboard');
     } catch (error) {
       console.error('Login error:', error.response?.data || error.message);
-      alert('Login failed! ' + (error.response?.data?.message || 'Check credentials.'));
+      setError(error.response?.data?.message || 'Failed to login. Please check your credentials.');
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  // Check for remembered email on component mount
+  React.useEffect(() => {
+    const rememberedEmail = localStorage.getItem('rememberedEmail');
+    if (rememberedEmail) {
+      setEmail(rememberedEmail);
+      setRememberMe(true);
+    }
+  }, []);
 
   return (
     <div className="login-container">
@@ -46,6 +68,8 @@ function Login() {
       <main className="login-content">
         <h2>Log in to TeamSync</h2>
         
+        {error && <div className="error-message">{error}</div>}
+        
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="email">Email</label>
@@ -55,6 +79,7 @@ function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={isLoading}
             />
           </div>
           
@@ -67,6 +92,7 @@ function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              disabled={isLoading}
             />
           </div>
           
@@ -76,11 +102,18 @@ function Login() {
               id="remember"
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
+              disabled={isLoading}
             />
             <label htmlFor="remember">Remember me</label>
           </div>
           
-          <button type="submit" className="login-button">Log in</button>
+          <button 
+            type="submit" 
+            className="login-button" 
+            disabled={isLoading}
+          >
+            {isLoading ? 'Logging in...' : 'Log in'}
+          </button>
         </form>
 
         <div className="forgot-password">
