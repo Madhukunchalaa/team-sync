@@ -5,7 +5,7 @@ import io from 'socket.io-client';
 import { debounce } from 'lodash';
 import './TeamSyncStyles.css';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const API_URL = process.env.REACT_APP_API_URL || 'https://team-sync-2.onrender.com';
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
