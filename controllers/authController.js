@@ -6,15 +6,21 @@ const registerUser = async (req, res) => {
   const { name, email, password } = req.body;
 
   try {
+    // Check if user already exists
     const userExists = await User.findOne({ email });
     if (userExists) return res.status(400).json({ message: 'Email already registered' });
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = await User.create({ name, email, password: hashedPassword });
+    // Create user without manual hashing - let the pre-save hook handle it
+    const newUser = await User.create({ 
+      name, 
+      email, 
+      password // No manual hashing here
+    });
 
     res.status(201).json({ message: 'User registered successfully', userId: newUser._id });
   } catch (error) {
-    res.status(500).json({ message: 'Error in registration', error });
+    console.error('Registration error:', error);
+    res.status(500).json({ message: 'Error in registration', error: error.message });
   }
 };
 
